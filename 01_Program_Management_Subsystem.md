@@ -29,7 +29,7 @@ The Program Management Subsystem is responsible for loading, executing, and mana
 
 Memory segments of a program refer to the distinct sections of memory allocated during program execution—namely the Text, Data, BSS, Heap, and Stack segments, each serving a specific role such as storing code, variables, or managing function calls and dynamic memory.
 
-<img width="424" height="636" alt="image" src="https://github.com/user-attachments/assets/2df6f8f4-2dbe-49b4-9ac0-65b79cbc26c2" />
+<img width="324" height="486" alt="image" src="https://github.com/user-attachments/assets/2df6f8f4-2dbe-49b4-9ac0-65b79cbc26c2" />
 
 
 - Stack and Heap are created only when program gets loaded to userspace of RAM.
