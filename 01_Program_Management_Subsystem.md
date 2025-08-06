@@ -18,7 +18,8 @@ The Program Management Subsystem is responsible for loading, executing, and mana
 1. User space
 2. Kernel space
 
-![alt text](PMS.png)
+<img width="800" height="583" alt="image" src="https://github.com/user-attachments/assets/35dd541a-1ea1-4572-b179-597cb28e8fa9" />
+
 
 #### What is Memory segments of a program?
 
@@ -28,7 +29,8 @@ The Program Management Subsystem is responsible for loading, executing, and mana
 
 Memory segments of a program refer to the distinct sections of memory allocated during program execution—namely the Text, Data, BSS, Heap, and Stack segments, each serving a specific role such as storing code, variables, or managing function calls and dynamic memory.
 
-![alt text](image.png)
+<img width="424" height="636" alt="image" src="https://github.com/user-attachments/assets/2df6f8f4-2dbe-49b4-9ac0-65b79cbc26c2" />
+
 
 - Stack and Heap are created only when program gets loaded to userspace of RAM.
 - Memory created using DMA calls is stored in Heap. <br>
@@ -72,7 +74,8 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 - There are so many process in the system. They have their own memory segment and corresponding PCB in kernel space.
   <br>
 
-![alt text](process.png)
+<img width="1200" height="783" alt="image" src="https://github.com/user-attachments/assets/0b6c2a83-cdf2-4f57-91b3-7cd3a65aece2" />
+
 <br>
 
 ## Running Queue
