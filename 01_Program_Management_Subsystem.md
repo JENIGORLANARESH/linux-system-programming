@@ -18,7 +18,7 @@ The Program Management Subsystem is responsible for loading, executing, and mana
 1. User space
 2. Kernel space
 
-![alt text](PMS.png)
+<img width="800" height="500" alt="image" src="https://github.com/user-attachments/assets/de624932-9b32-4f20-8ae7-af4eacf2164b" />
 
 #### What is Memory segments of a program?
 
