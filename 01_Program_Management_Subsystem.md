@@ -74,7 +74,7 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 - There are so many process in the system. They have their own memory segment and corresponding PCB in kernel space.
   <br>
 
-<img width="1200" height="783" alt="image" src="https://github.com/user-attachments/assets/0b6c2a83-cdf2-4f57-91b3-7cd3a65aece2" />
+<img width="901" height="486" alt="image" src="https://github.com/user-attachments/assets/d33d6099-759d-4783-8c3c-25805b2e716b" />
 
 <br>
 
