@@ -87,7 +87,8 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 ## Ways of creating the process
 1) From the executable file process can be created by using the command ./a.out , where a.out is the executable file obtained after compilation.
 
-// picture aout
+
+<img width="724" height="206" alt="aout" src="https://github.com/user-attachments/assets/7c07fc1a-2bb8-44ae-bd43-8548a145ce89" />
 
 2) fork() System call
 ### System Call
@@ -107,7 +108,8 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 
 #### Note : A process which invokes fork system call is called parent process and the new process gets created is called the child process.
 
-// picture parent and child process
+
+<img width="523" height="526" alt="parent_child_process" src="https://github.com/user-attachments/assets/afbfd3b9-f306-4029-b886-238d8cbf5bba" />
 
 * Example : 
 ```
@@ -139,7 +141,8 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 * Some members of parent process PCB are copied to the child process PCB.
 #### QA) Which members of Parent process PCB are copied to child process PCB?
 
-// picture of parent child copy
+
+<img width="709" height="349" alt="parent_child_copy" src="https://github.com/user-attachments/assets/5c731fce-1775-411c-8c72-dcbf53bac36a" />
 
 * The contents of File Discriptor table are inherited from parent process
 * For this new child process we create some additional memory in user space
