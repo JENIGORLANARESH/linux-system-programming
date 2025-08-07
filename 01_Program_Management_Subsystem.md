@@ -95,7 +95,8 @@ Memory segments of a program refer to the distinct sections of memory allocated 
    - It is used in user space to send request in sub-system in kernel space. 
    - Every system call has an equivalent call in kernel space which starts with SYS_
    - Example:
-   ```      fork()      user space
+   ```      
+            fork()      user space
          _________________________
 
             sys_fork()  kernel space
