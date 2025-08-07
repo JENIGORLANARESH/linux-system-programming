@@ -74,10 +74,114 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 - There are so many process in the system. They have their own memory segment and corresponding PCB in kernel space.
   <br>
 
-<img width="901" height="486" alt="image" src="https://github.com/user-attachments/assets/d33d6099-759d-4783-8c3c-25805b2e716b" />
+<img width="701" height="386" alt="image" src="https://github.com/user-attachments/assets/d33d6099-759d-4783-8c3c-25805b2e716b" />
 
 <br>
 
 ## Running Queue
 
 - PCB are maintained as a node in linked list and the list is called the Running Queue.
+- Process Management subsystem maintains or handles this Running Queue
+- The list of PCB's are handled in process management subsystem.
+
+## Ways of creating the process
+1) From the executable file process can be created by using the command ./a.out , where a.out is the executable file obtained after compilation.
+
+// picture aout
+
+2) fork() System call
+### System Call
+   - It is used in user space to send request in sub-system in kernel space. 
+   - Every system call has an equivalent call in kernel space which starts with SYS_
+   - Example:
+   ```      fork()      user space
+         _________________________
+
+            sys_fork()  kernel space
+   ```
+   - there are altogethere 320+ system calls, we can add more
+* fork() system call can be used to create a child process.
+* The process from where the fork() is invoked is called "Parent Process".
+* Once we call fork() control immediately jumps to kernel space or invoking an equivalent funtion in kernel space starting with sys_fork() is actually sending request to kernel space subsystem.
+<br>
+
+#### Note : A process which invokes fork system call is called parent process and the new process gets created is called the child process.
+
+// picture parent and child process
+
+* Example : 
+```
+      main()
+      {
+         int id;
+         id = fork();      // create a new child process
+         if(){
+
+         }else{
+
+         }
+      }
+```
+
+   - once you invoke fork() the control jumps to kernel space
+   - sending request to kernel space
+   - you are invoking an equivalent function in kernel space it starts with sys_fork()
+   - fork() actually sending request to kernel space process management subsystem
+   - a new PCB get created for child process
+
+* Parent process PCB has
+   1) Process identifier (PID)
+   2) Parent process identifier (PPID)
+   3) File discriptor table
+   4) Signal disposition table
+   5) Page table
+
+* Some members of parent process PCB are copied to the child process PCB.
+#### QA) Which members of Parent process PCB are copied to child process PCB?
+
+// picture of parent child copy
+
+* The contents of File Discriptor table are inherited from parent process
+* For this new child process we create some additional memory in user space
+* the contents of parent process memory segmets are copied as it is to child process memory segments
+* The child process is an exact replica of parent process
+* from a sigle program we can create multiple process
+<br>
+
+* When fork() is invoked, the following things happens:
+   - new PCB gets created in kernel space for child process
+   - For child process, some additional memory in user space gets created
+
+* By using the conditional statement after fork(), we ensure parent process and the child process will execure different blocks of codes.
+* If conditional statements are not present then parent and child process will execute the same block of code
+* To this coditional statement we pass return value of fork()
+<br>
+
+```
+      // parent process
+      main()
+      {
+         pid = fork();
+         if(pid == 0){              // Not executed
+            printf(". . . ");
+         }
+         else{                      // Executed
+            printf("...");
+         }
+      }
+```
+```
+      // child process
+      main()
+      {
+         pid = fork();
+         if(pid == 0)
+         {
+            printf("...");          // executed
+         }
+         else
+         {
+            printf("....");         // not executed
+         }
+      }
+```
