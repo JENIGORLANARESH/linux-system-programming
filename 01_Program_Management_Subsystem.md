@@ -140,6 +140,7 @@ Memory segments of a program refer to the distinct sections of memory allocated 
    5) Page table
 
 * Some members of parent process PCB are copied to the child process PCB.
+
 #### QA) Which members of Parent process PCB are copied to child process PCB?
 
 
@@ -187,5 +188,36 @@ Memory segments of a program refer to the distinct sections of memory allocated 
          {
             printf("....");         // not executed
          }
+      }
+```
+* For above child process execution is not going to start from the main() function, it starts from after the fork()
+* fork() returns twice, once in parent process and once in child process.
+   -  fork() returns the pid of child process in parent process
+   -  fork() returns 0 in the child process
+* So in above if() block is ex aecuted in child process and else block is executed in parent process
+<br>
+
+* Using switch()
+
+```
+      // parent process
+      switch(fd){
+         case -1:          // not executed
+               error;
+         case 0:           // not executed
+               break;
+         default:          // excecuted
+               break;
+      }
+```
+```
+      // child process
+      switch(fd){
+         case -1:          // not executed
+               error;
+         case 0:           //  executed
+               break;
+         default:          // not excecuted
+               break;
       }
 ```
