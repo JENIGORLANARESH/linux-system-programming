@@ -286,6 +286,7 @@ Memory segments of a program refer to the distinct sections of memory allocated 
       * wait() comes out of blocking state only when the child process get terminated
 <br>
       * Parent process:
+
             ```
             main()
             {
@@ -303,7 +304,9 @@ Memory segments of a program refer to the distinct sections of memory allocated 
             ✅printf("%d", WEXITSTATUS(stat));
             }
             ```
+
       * Child process:
+
             ```
             main()
             {
@@ -321,7 +324,9 @@ Memory segments of a program refer to the distinct sections of memory allocated 
             ❌printf("%d", WEXITSTATUS(stat));
             }
             ```
-      <br>
+
+<br>
+
       * Inside the child wait() should not execute, so it is necessary to use exit()
       * Parent process wait() comes out of the blocking state only after child process is terminated
       * When exit() is called, the memory segments of child process from user space are offloaded.
@@ -341,10 +346,12 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 
       * By using ps -af command we can be able to see the child process.
       * By sending a signal we can terminate a process.
+
          ```
                      kill -9 1000
              signal number_|    |_ PID of process
          ```
+         
       * Zombie process cannot be terminated by kill command.
       * The exit code of child process can be found in the argument of wait().
 
