@@ -798,7 +798,7 @@ There are 3 scenarios
    }
 ```
 
-<img width="1766" height="1479" alt="paging" src="https://github.com/user-attachments/assets/27c2b332-9267-49d9-af89-450a4c3432e9" />
+<img width="666" height="579" alt="paging" src="https://github.com/user-attachments/assets/27c2b332-9267-49d9-af89-450a4c3432e9" />
 
 <br>
 
