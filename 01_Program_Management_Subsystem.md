@@ -241,7 +241,8 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 #### Orphan process and Demon process(Zombie process)
 * Orphan process : 1st process terminates even before child process, is called orphan process
 * Exmaple:
-      ```
+
+```
          int main() {
             if (fork() == 0) {  // Child
                sleep(3);
@@ -250,7 +251,8 @@ Memory segments of a program refer to the distinct sections of memory allocated 
                exit(0);
             }
          }
-      ```
+```
+
 * Once the main function terminates, then the parent process will be terminated. The memory segments and PCB get loaded from user space and kernel space respectively.
 
 * What is the PPID of orphan process?
@@ -285,9 +287,10 @@ Memory segments of a program refer to the distinct sections of memory allocated 
       * Using wait() blocking call
       * wait() comes out of blocking state only when the child process get terminated
 <br>
-      * Parent process:
+      
+* Parent process:
 
-            ```
+```
             main()
             {
                int stat;
@@ -303,11 +306,13 @@ Memory segments of a program refer to the distinct sections of memory allocated 
             ✅wait(&stat);
             ✅printf("%d", WEXITSTATUS(stat));
             }
-            ```
 
-      * Child process:
+```
 
-            ```
+
+* Child process:
+
+```
             main()
             {
                int stat;
@@ -323,7 +328,7 @@ Memory segments of a program refer to the distinct sections of memory allocated 
             ❌wait(&stat);
             ❌printf("%d", WEXITSTATUS(stat));
             }
-            ```
+```
 
 <br>
 
@@ -351,7 +356,7 @@ Memory segments of a program refer to the distinct sections of memory allocated 
                      kill -9 1000
              signal number_|    |_ PID of process
          ```
-         
+
       * Zombie process cannot be terminated by kill command.
       * The exit code of child process can be found in the argument of wait().
 
