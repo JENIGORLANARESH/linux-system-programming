@@ -221,3 +221,334 @@ Memory segments of a program refer to the distinct sections of memory allocated 
                break;
       }
 ```
+<br>
+
+* CLA
+   - ps -cf :- for visualizing the process running in the system.
+   - top    :- for visualizing the process running in the system.
+* GUI
+   - Viven     2003    1495   0:80:23                          /home/desktop/...
+   -            pid    ppid   time stamp of created process    name of the file
+
+* Difference between ps and top?
+   - ps : snapshot of the process
+   - top : process information get updated after each 1 second
+<br>
+
+#### init() process
+   - the first process after linux boot or OS boot.
+
+#### Orphan process and Demon process(Zombie process)
+* Orphan process : 1st process terminates even before child process, is called orphan process
+* Exmaple:
+      ```
+         int main() {
+            if (fork() == 0) {  // Child
+               sleep(3);
+               printf("Child: parent pid = %d\n", getppid());
+            } else {            // Parent
+               exit(0);
+            }
+         }
+      ```
+* Once the main function terminates, then the parent process will be terminated. The memory segments and PCB get loaded from user space and kernel space respectively.
+
+* What is the PPID of orphan process?
+   - The PPID of the orphan process is 1, it takes the PID of the init process, init process is the first process of OS Boot.
+<br>
+
+#### exit (vs) return
+   * The return takes return to the location where function is invoked.
+   * Whereas exit terminates the entire function.
+   * Example : 
+   ```
+      main()
+      {  ....
+         add();
+         ....
+         return 5;
+      }
+      add()
+      {
+         ....
+         return ();  // returns the value
+      }
+   ```
+   * return 5 (or) exit(5)
+      - They are sent to the parent process. Because parent process needs to know the exit status of child process.
+      - in exit, 5 is only takes 1 byte
+   * Kernel by default submits the status of child process to parent process. And it is done by using command "wait(&status)"
+
+#### In Parent process can you access to the exit or return value of child process?
+#### In parent process how do you block to get the id of child?
+
+      * Using wait() blocking call
+      * wait() comes out of blocking state only when the child process get terminated
+<br>
+      * Parent process:
+            ```
+            main()
+            {
+               int stat;
+            ✅id = fork();
+               if(id == 0)
+               {
+                  printf("Child process");
+                  exit(0);
+               }
+               else{
+            ✅   printf("Parent process");
+               }
+            ✅wait(&stat);
+            ✅printf("%d", WEXITSTATUS(stat));
+            }
+            ```
+      * Child process:
+            ```
+            main()
+            {
+               int stat;
+               id = fork();
+            ✅if(id == 0)
+               {
+                  printf("Child process");
+                  exit(0);
+               }
+            ❌else{
+                  printf("Parent process");
+               }
+            ❌wait(&stat);
+            ❌printf("%d", WEXITSTATUS(stat));
+            }
+            ```
+      <br>
+      * Inside the child wait() should not execute, so it is necessary to use exit()
+      * Parent process wait() comes out of the blocking state only after child process is terminated
+      * When exit() is called, the memory segments of child process from user space are offloaded.
+      * The exit() code is stored in PCB of child process
+      * Kernel after submitting the exit code to parent process, it offloads the PCB of child process from kernel space
+      <br>
+      <img width="643" height="510" alt="image" src="https://github.com/user-attachments/assets/7adfe6b1-a142-473c-b178-59bd27f8cf8c" />
+      
+      * If parent process doesn't use wait() it cannot get access to exit code from child process
+      * If no wait() was there, then we cannot get the exit code of child process. Although the memory segments will be erased but PCB contents will be there.
+<br>
+
+   #### Zombie Process
+      - A zombie (Demon or defunct) process is a terminated child process whose execution is complete but whose Process Control Block (PCB) still exists in the system’s process table because the parent has not yet read its exit status using wait() or waitpid().
+
+<br>
+
+      * By using ps -af command we can be able to see the child process.
+      * By sending a signal we can terminate a process.
+         ```
+                     kill -9 1000
+             signal number_|    |_ PID of process
+         ```
+      * Zombie process cannot be terminated by kill command.
+      * The exit code of child process can be found in the argument of wait().
+
+<br>
+
+<img width="350" height="131" alt="image" src="https://github.com/user-attachments/assets/41e5c299-65c8-47f5-a0df-08acec8a2022" />
+
+   * By using the bitwise operator 1 Byte of exit is stored in either 1st, 2nd, 3rd, 4th byte of the stat
+   * WEXITSTATUS(stat) : It is a predefined macro which extracts 1 byte of exit code from the 4 byte variable
+
+* Driver is never going to initiate an IO request
+* Only Applications can initiate a IO request
+* You can only have single driver for accessing single device
+* We cannot have multiple drivers accessing a single device
+* Multiple applications can send request to single driver, and then to single device
+<img width="672" height="317" alt="image" src="https://github.com/user-attachments/assets/626784e8-c972-44a4-b210-4f9d60bf4bf6" />
+
+#### Q) Which specific set of system calls are used by the application to send request to driver?
+   - Basic I/O calls
+* Hardware can initiate a request in the form of hardware interrupts
+
+### Need of fork()
+
+1) To create multiple applications from a single application
+2) Shell program internally uses fork() + exec() family system call
+   - There are different types of shells are there
+      1. bash shell
+      2. c-shell
+      3. bomb shell
+3) In client and server programming we use fork() system call
+
+<img width="660" height="180" alt="image" src="https://github.com/user-attachments/assets/e2e21fa1-481b-4767-964b-5faf2ea58fdb" />
+
+#### Note:
+   - wait() return pid of child process that has been terminated
+   - pid = wait(&stat);
+   - 1 byte contains exit code from child process
+   - Remaining 3 bytes contains the information about normal/abnormal termination of child process
+   - In case of abnormal termination the signal used to terminate the specific child process is specified
+   * Variants of wait() system call :
+      - wait() : Locks until child process terminates
+      - waitpid() : It takes 3 arguments and it comes to unblocking state when any specific child terminates
+<br>
+
+   ```
+      main()
+      {
+         fork();
+         fork();
+         fork();
+         printf("fork()");
+      }
+   ```
+   * Number of fork() call = 3
+   * Number of outputs = 2 power 3 = 8
+   * fork() will be printed 8 times
+
+<br>
+
+```
+   Parent process
+   main()
+   {
+      int stat;
+      int chpid1, chpid2;
+      
+      chpid1 = fork();              // first child process
+      if(chpid1 == 0)
+      {
+         printf("1st child process");
+         sleep(50);
+         exit(5);                   // it is mandatory to have exit or return at end of if block
+      }
+
+      chpid2 = fork();              // second child process
+      if(chpid2 == 0)
+      {
+         printf("2nd child process");
+         sleep(30);
+         return 4;
+      }
+
+      pid = wait(&stat);                     // second child process termination pid = 2002
+      printf("%d", WEXITSTATUS(stat));       // 4
+
+      pid = wait(&stat);                     // first child process termination  pid = 2001
+      printf("%d", WEXITSTATUS(stat));       // 8
+   }
+```
+
+<br>
+
+```
+   1st child process
+   main()
+   {
+      int stat;
+      int chpid1, chpid2;
+      
+      chpid1 = fork();              
+      if(chpid1 == 0)               // start
+      {
+         printf("1st child process");     ✅
+         sleep(50);                       ✅
+         exit(5);                         ✅
+      }
+                                          ❌all below code wont execute
+      chpid2 = fork();              
+      if(chpid2 == 0)
+      {
+         printf("2nd child process");
+         sleep(30);
+         return 4;
+      }
+
+      pid = wait(&stat);                     
+      printf("%d", WEXITSTATUS(stat));       
+
+      pid = wait(&stat);                     
+      printf("%d", WEXITSTATUS(stat));       
+   }
+```
+<br>
+
+```
+   1st child process
+   main()
+   {
+      int stat;
+      int chpid1, chpid2;
+      
+      chpid1 = fork();              
+      if(chpid1 == 0)                     ❌this if code wont execute
+      {
+         printf("1st child process");     
+         sleep(50);                       
+         exit(5);                         
+      }
+                                          
+      chpid2 = fork();              
+      if(chpid2 == 0)                     // start
+      {
+         printf("2nd child process");     ✅
+         sleep(30);                       ✅
+         return 4;                        ✅
+      }  
+                                          ❌below code wont execute
+      pid = wait(&stat);                     
+      printf("%d", WEXITSTATUS(stat));       
+
+      pid = wait(&stat);                     
+      printf("%d", WEXITSTATUS(stat));       
+   }
+
+```
+<br>
+
+* from a single process we have created 3 processes
+* The parent process and two child process execute independent of each other
+#### vfork()
+   * vfork() is always combined with exec() family of system calls.
+   * To understand vfork() we need to understand the virtual memory which requires further concept pagening technique and address translation.
+
+<br>
+
+# Virtual Memory
+   - Paging Technique
+   - Address Translations
+
+#### Why dont we run program within Hard-disk
+#### Why do we copy program to RAM for execution
+   1) Access speed of Hard Disk is slower when compared to RAM
+   2) We can access only block by block data from Hard Disk. But we can do Byte by Byte access from RAM.
+
+* RAM is split into byte by byte locations.
+* Eack byte of RAM have unique address
+* We can store these addresses using pointers
+
+<br>
+
+* Memory in CPU is in the form of registers, an we use register name to refer to the CPU register.
+#### How do you copy data from RAM to CPU registers?
+   * By using the CPU intructions LDA i.e Load
+#### How do you copy data from CPU register to RAM?
+   * By using the CPU instruction STR i.e store
+
+<img width="707" height="336" alt="image" src="https://github.com/user-attachments/assets/cf66c12b-d442-4ea1-a8fd-84914dca075f" />
+
+<br>
+
+# Virtual Memory
+   * Suppose we have four process already loaded into RAM and we want to load one more process
+
+<img width="404" height="278" alt="image" src="https://github.com/user-attachments/assets/0f987ca0-bcdf-47d4-a560-62f6efe9234b" />
+
+### If you want to run a new process in RAM
+
+#### Option 1:
+   * Wait until one of the process terminates
+      - we dont know how much time a process will take to terminate, it depends upon processor. so not fissible
+#### Option 2:
+   * Terminate one of the process in between
+      - No fissible
+#### Option 3:
+   * Try to find out segment of these process which are not used for longer duration of time.
+      - It can be done
+
