@@ -332,25 +332,29 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 
 <br>
 
-      * Inside the child wait() should not execute, so it is necessary to use exit()
-      * Parent process wait() comes out of the blocking state only after child process is terminated
-      * When exit() is called, the memory segments of child process from user space are offloaded.
-      * The exit() code is stored in PCB of child process
-      * Kernel after submitting the exit code to parent process, it offloads the PCB of child process from kernel space
-      <br>
-      <img width="643" height="510" alt="image" src="https://github.com/user-attachments/assets/7adfe6b1-a142-473c-b178-59bd27f8cf8c" />
+   * Inside the child wait() should not execute, so it is necessary to use exit()
+   * Parent process wait() comes out of the blocking state only after child process is terminated
+   * When exit() is called, the memory segments of child process from user space are offloaded.
+   * The exit() code is stored in PCB of child process
+   * Kernel after submitting the exit code to parent process, it offloads the PCB of child process from kernel space
+
+   <br>
+   
+   <img width="643" height="510" alt="image" src="https://github.com/user-attachments/assets/7adfe6b1-a142-473c-b178-59bd27f8cf8c" />
       
-      * If parent process doesn't use wait() it cannot get access to exit code from child process
-      * If no wait() was there, then we cannot get the exit code of child process. Although the memory segments will be erased but PCB contents will be there.
-<br>
-
-   #### Zombie Process
-      - A zombie (Demon or defunct) process is a terminated child process whose execution is complete but whose Process Control Block (PCB) still exists in the system’s process table because the parent has not yet read its exit status using wait() or waitpid().
+   * If parent process doesn't use wait() it cannot get access to exit code from child process
+   * If no wait() was there, then we cannot get the exit code of child process. Although the memory segments will be erased but PCB contents will be there.
 
 <br>
 
-      * By using ps -af command we can be able to see the child process.
-      * By sending a signal we can terminate a process.
+#### Zombie Process
+
+   - A zombie (Demon or defunct) process is a terminated child process whose execution is complete but whose Process Control Block (PCB) still exists in the system’s process table because the parent has not yet read its exit status using wait() or waitpid().
+
+<br>
+
+   * By using ps -af command we can be able to see the child process.
+   * By sending a signal we can terminate a process.
 
          ```
                      kill -9 1000
