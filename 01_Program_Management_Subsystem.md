@@ -340,7 +340,7 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 
    <br>
    
-   <img width="643" height="510" alt="image" src="https://github.com/user-attachments/assets/7adfe6b1-a142-473c-b178-59bd27f8cf8c" />
+   <img width="343" height="210" alt="image" src="https://github.com/user-attachments/assets/7adfe6b1-a142-473c-b178-59bd27f8cf8c" />
       
    * If parent process doesn't use wait() it cannot get access to exit code from child process
    * If no wait() was there, then we cannot get the exit code of child process. Although the memory segments will be erased but PCB contents will be there.
@@ -567,4 +567,193 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 #### Option 3:
    * Try to find out segment of these process which are not used for longer duration of time.
       - It can be done
+
+* Inorder to find out the segments which are not used for longer duration in a process we need to follow some algorithms.
+
+* Step 1 : Hard Disk is consists of two segments i.e SWAP AREA segment(in Linux) or BACKING STORE(in windows) and File System. 
+* Segments of process which are not used for longer duration is moved to Swap Area of Hard Disk
+#### NOTE:
+   - It is not mandatory to have all segments in RAM for executions. Some of the process segments may be there in Swap Area and still we can execute the process
+
+<img width="526" height="277" alt="image" src="https://github.com/user-attachments/assets/af1045f9-ca56-491a-abba-a4ace24b8dea" />
+
+* The empty spaces that has been generated are not continuous memory locations. It is because some of the memory segments of process which does not lost for long duration of time has been shifted to swap area of hard disk.
+
+* Since we have empty spaces load the new process. But empty new spaces are not continuous.
+* The new process segements has to be splitted and load to the non continuous or empty memory locations.
+
+#### Note:
+   - To run a program, memory segments need not be continuous memory locations. It also can be non contiguous.
+
+* PROBLEM : We have 2 issues in this design of process
+   1. Keeping track of segments of process copied to the swap area fo hard disk.
+   2. Keeping track of segments of a new process which are present in non coniguous memory locations.
+* To overcome these two issues we use Paging Technique
+* Note : Ram size is limited
+<br>
+
+# Paging Technique
+
+* Here we dont load the process directly into RAM.
+* So before loading to RAM, we divide the process into equal parts known as Pages or Virtual page.
+* Pages are numbered storing from zero(0).
+* The virtual memory scheme splits the memory used by the process into equal size parts called as Pages or Virtual Pages.
+* Size of each page can be 2KB, 4KB, 8KB.
+* By default in Linux page size is 4KB. In solaris OS page size is 8KB.
+* You can configure linux page to 2KB or 8KB, but default is 4KB.
+* Visualize that a page is a 4kb block of memory of a process
+
+<img width="226" height="232" alt="image" src="https://github.com/user-attachments/assets/db5f0859-2dfd-4df6-a0dc-77816f67f9ed" />
+
+#### Physical Frames
+
+* RAM is also divided into equal size parts called as Physical Frames or Page Frames
+* Physical frame size should be eqaul to that of pages size.
+* The number of pages within a process are not fixed, they changes.
+
+<img width="275" height="225" alt="image" src="https://github.com/user-attachments/assets/94712f9c-2c51-4931-9455-571f8a40098e" />
+
+#### Why number of pages within a process are not fixed?
+   1. When heap and stack grows, the number of pages within a process increases
+   2. When a new shared memory is created the number of pages increases
+   3. When we create a new block of memory using memory mapping call "mmapp()"
+
+#### Why do we require shared memory?
+   - By default multiple process cannot share data(i.e send and receive). so its required
+#### How does multiple process can share data?
+   * By using IPC(Inter Process Communication) mechanism
+   * Inter Process Communication (IPC)
+      - Different types of IPC mechanism are given below
+      1. Pipes
+      2. Named pipes(FIFO)
+      3. Message Memory
+      4. Shared Memory
+      5. Semaphores
+
+* Multiple process must need IPC mechanism to share the data (send or receive)
+* Physical frames are numbered starting from zero
+* Initially all the pages are copied continuously
+* Over a period of time during execution the pages goes into uncontinuous physical frames due to swap invasion.
+
+* Page Table : Page table is present inside the PCB. Page number are used as indexed to this page table.
+* Page table contain physical frame numbers.
+* We have another name for this info known as "Page Mapping Info"
+* Page table contains information about which page are copied to which physical frame.
+
+<img width="757" height="631" alt="image" src="https://github.com/user-attachments/assets/2ffc16ee-ce89-445a-a96a-743e1b718a74" />
+
+* Each process have their own page table.
+* In above the pages of process-1 and pages of process-2 are copied into completly different physical frames (or) Pages of multiple process are copied into different physical frames.
+* Page table of process 1 and page table of process 2 are pointing to completly different physical frames.
+* If you want to create some empty space to load new process, try to findout pages which are not used for longer duration, that can be done with the help of page replacement algorithm.
+* Pages which are not used for longer duration they are copied to swap area.
+
+#### Explain a scenario when pages of process1 and pages of process2 are copied into same physical frames
+#### (or)
+#### Explain a scenario where pages of multiple process are sharing the same physical frames
+#### (or)
+#### Can the page table of multiple process point to same physical frames?
+
+There are 3 scenarios
+1. During child process creation, parent process and child process pages are copied into same physical frames. <br>
+(or) <br>
+ Pages of parent and child process are sharing same physical frame
+ 2. When multiple process share data using shared memory IPC mechanism
+ 3. When multiple process share memory thats created using Memory Mapping Call "mmap()"
+
+ #### Program
+
+ ```
+   int x = 10;
+   main()
+   {
+      id = fork();
+      if(id == 0)
+      {
+         x = 20;
+         printf("Child process");
+         exit(5);
+      }
+      id = wait(&stat);
+      printf("%d", WEXITSTATUS(stat));
+      printf("%d", x);                    // output : 10
+   }
+```
+
+<img width="643" height="598" alt="page_table" src="https://github.com/user-attachments/assets/7548d56a-8e15-46ff-81d4-00d040f81276" />
+
+* In recent operating system the memory segments for child process is not created immediatly, It is created after some time of execution.
+* During initial stage of execution child process uses the memory segments of parent process.
+
+<img width="388" height="318" alt="image" src="https://github.com/user-attachments/assets/ef73eed3-bce7-4b28-ad17-714bde6738d9" />
+
+#### How does the child process uses the memory segments of parent process?
+* The memory segments of a process are divided into pages, and these pages are are accessed by both parent process and child process.
+* While CPU executing these instructions, they operate on information that present in stack, heap, data, bss segments.
+* Page table of parent process and page table of child process are poiting to same physical frames.
+* Parent process and child process are using the pages stored in same physical frames
+* Until when the child process, parent process shares the pages stored in same physical frames.
+* As long as parent process and child process does the "READ OPERATION" they will share these pages.
+* Once parent or child does "WRITE OPERATION" seperate pages gets created.
+
+<img width="556" height="588" alt="image" src="https://github.com/user-attachments/assets/b709161e-61af-4502-9d4b-a9103db7a5b8" />
+
+<br>
+
+#### How does parent process and child process keeps tracks of which instructions they are executing?
+   - By storing some information in contexual area.
+   - Parent process and child process have to keep track of which instructions they are executing.
+#### How parent child process after fork() executes different blocks of code?
+   - Based on the return value of fork() being passed to conditional statement.
+
+* consider following example
+
+```
+   parent process
+   int x = 10;
+   main()                                 // start
+   {
+      id = fork();
+      if(id == 0)
+      {
+         x = 20;
+         printf("child");
+         exit(5);
+      }
+      id = wait(&stat);
+      printf("%d", WEXITSTATUS(stat));
+      printf("%d", x);                       // output : 10
+   }
+```
+
+```
+   child process
+   int x = 10;
+   main()
+   {
+      id = fork();
+      if(id == 0)                            // start
+      {
+         x = 20;         //  4 bytes data segement -> page2 -> physical frame3 -> updates to physical frame5 after write operation
+         printf("child");
+         exit(5);
+      }
+      id = wait(&stat);                      ❌
+      printf("%d", WEXITSTATUS(stat));       ❌
+      printf("%d", x);                       ❌
+   }
+```
+
+<img width="1766" height="1479" alt="paging" src="https://github.com/user-attachments/assets/27c2b332-9267-49d9-af89-450a4c3432e9" />
+
+<br>
+
+#### Write Operation to pages (parent/child process)
+1. Child process is suspended
+2. Write on copy / copy on write
+   1. Pages on write operation is performed are duplicated
+   2. Duplicate pages is copied into freely available physical frames
+   3. Pages correspoding entry in page table of child process modified.
+3. child process resumed
+4. Write operation performed
 
