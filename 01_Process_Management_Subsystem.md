@@ -1,4 +1,4 @@
-# Program Management Subsystem
+# Process Management Subsystem
 
 The Program Management Subsystem is responsible for loading, executing, and managing programs (processes) in memory. It deals with how programs become processes and how they interact with the OS.
 
@@ -832,7 +832,7 @@ There are 3 scenarios
 
 - NOTE : when parent and child tries to do write operation, write on copy or copy on write (COW) technique is applied.
 - In case of vfork(), COW technique in not applied but in fork() COW technique is applied.
-
+- In above program, we are writing to page
 <br>
 
 # Address Translation
