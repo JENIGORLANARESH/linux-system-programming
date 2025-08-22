@@ -22,13 +22,11 @@ The Program Management Subsystem is responsible for loading, executing, and mana
 
 #### What is Memory segments of a program?
 
-#### What is Memory sectioin of a program?
+#### What is Memory sections of a program?
 
 #### Memory Layout of a program?
 
 Memory segments of a program refer to the distinct sections of memory allocated during program execution—namely the Text, Data, BSS, Heap, and Stack segments, each serving a specific role such as storing code, variables, or managing function calls and dynamic memory.
-
-<img width="324" height="486" alt="image" src="https://github.com/user-attachments/assets/2df6f8f4-2dbe-49b4-9ac0-65b79cbc26c2" />
 
 - Stack and Heap are created only when program gets loaded to userspace of RAM.
 - Memory created using DMA calls is stored in Heap. <br>
@@ -41,8 +39,9 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 
 - When a new Thread is created a block of memory is created in stack is called Stack Area.
 
-#### PCB
+### PCB
 
+- A Process Control Block (PCB) is a data structure maintained by the Operating System (OS) that contains all the information about a process.
 - For every process, the operating system creates a block of memory in kernel space called the Process Control Block (PCB).
 
 ### PCB contains
@@ -236,8 +235,10 @@ Memory segments of a program refer to the distinct sections of memory allocated 
   - top :- for visualizing the process running in the system.
 - GUI
 
-  - Viven 2003 1495 0:80:23 /home/desktop/...
-  -            pid    ppid   time stamp of created process    name of the file
+```
+   Viven  2003   1495     0:80:23                         /home/desktop/...
+          pid    ppid   time stamp of created process    name of the file
+```
 
 - Difference between ps and top?
   - ps : snapshot of the process
@@ -250,6 +251,7 @@ Memory segments of a program refer to the distinct sections of memory allocated 
 
 #### Orphan process and Demon process(Zombie process)
 
+- An Orphan Process is a process whose parent terminates before the child finishes execution.
 - Orphan process : 1st process terminates even before child process, is called orphan process
 - Exmaple:
 
@@ -833,6 +835,217 @@ There are 3 scenarios
 - NOTE : when parent and child tries to do write operation, write on copy or copy on write (COW) technique is applied.
 - In case of vfork(), COW technique in not applied but in fork() COW technique is applied.
 - In above program, we are writing to page
-<br>
+  <br>
+  <br>
 
 # Address Translation
+
+Physical Address vs Virtual Address
+
+**Physical Address** is the address of of physical memory locations in RAM
+**Virtual Address** contains page number and offset.
+
+<img width="285" height="134" alt="image" src="https://github.com/user-attachments/assets/8b3612c9-a816-426d-ac87-cdd67c62d943" />
+
+```
+   main()
+   {
+      int x;
+      printf("%p", &x);    -> 0x7feg7200 -> virtual address
+      x = 10;              -> translate to :  STR  r0  .......
+                           -> STR : store instruction
+                           -> r0  : register number
+                           -> ....: address of memory in RAM
+   }
+```
+
+**NOTE**
+
+- Whenever we use &(ampersand), we get an address which is virtual address.
+- STR instructions moves data from CPU registers to RAM.
+- STR / LDR instructions are also operate on virtual address.
+- When CPU is executing this instructions, then **virtual address** is converted to **physical address**.
+
+<img width="645" height="287" alt="image" src="https://github.com/user-attachments/assets/fbad8494-43bf-45d5-8ead-9388da2b065e" />
+
+- While CPU is executing these instructions, it places address on Address Bus, data on Data Bus and Write/Read operations on Ctrl Bus.
+
+**QUESTION** : What address CPU places on Address Bus?
+
+**Ans**
+
+- Virtual Address -> on Address Bus.<br>
+- Contents of ro(register) -> on Data Bus.<br>
+- Write/Read Signals -> on Ctrl Bus.<br>
+
+<br>
+
+```
+   int x = 10;    -> global variable
+   main()
+   {
+      x = 20;  -> local variable
+   }
+```
+
+<img width="666" height="688" alt="image" src="https://github.com/user-attachments/assets/3fdb3373-5830-4a0d-a0e0-661282e28e23" />
+
+- Memory Management Unit (or) Memory Control Unit are responsible for this address translation i.e Virtual Address to Physical Address
+
+**Question** : How MMU translates Virtual Address to Physical Address?
+
+         - By looking into page table.
+
+- If the memory of x is present from the beginning of page then offset will be zero.
+
+**Question** : When Virtual Addresses are generated?
+
+- During compilation c-statements are converted to assembly code and from there to instructions.
+- Thus, during Compilation Virtual Adresses are generated.
+
+**Question** : When Physical Addresses are generated?
+- During runtime or execution time
+
+**Note** : CPU sends the virtual address, the MMU is going to extract the page number from virtual address and it uses page number as index to page table and gets corresponding page number.
+
+
+<img width="754" height="159" alt="image" src="https://github.com/user-attachments/assets/f8c6670e-880f-470f-b480-42ffb0aaaa5b" />
+
+* fork() : Write on Copy technique is applied.
+* vfork() : Write on Copy technique is NOT applied.
+
+**ls -l** : list all files present in the recent directory.
+* It is called as command/CLI/shell command/tools
+
+<br>
+
+#### Question : Can we use commands within c-program?
+
+**Ans** : For running the commands from c-program there is c-standard library function i.e System() ; it is used to execute shell commands from c-program
+
+Also by using Exec() family of calls we can run commands within c-program.
+
+```
+   main()
+   {
+      System()
+         or
+      Exec family of calls
+   }
+```
+
+**Note**: vfork() is always used with Exec() family of calls.
+   - Ex: Execl() , Execu(), Execlp(), Execxp()
+
+To understand Exec() family of calls we need to understand :
+   1. Command Line Arguments
+   2. Array of pointers
+   3. Pointers
+
+# Pointers
+
+Three steps : <br>
+   1. creating a pointer
+   2. Assigning the valid address, If invalid address is provided tehn runtime error or segmentation fault is observed.
+   3. Dereferencing the pointer
+
+<br>
+
+arr[0] = *(arr+0) = *(0+arr) = 0[arr]
+
+<br>
+
+So, for accessing the array element we have 4 ways.
+
+int arr[5] = {20, 30, 40, 50, 60}; <br>
+int *ptr;<br>
+ptr = &arr[0];<br>
+
+Then, <br>
+ptr[0] = *(ptr+0) = 0[ptr] = *(0+ptr) = 20<br>
+ptr[1] = *(ptr+1) = 1[ptr] = *(1+ptr) = 30<br>
+ptr[2] = *(ptr+2) = 2[ptr] = *(2+ptr) = 40<br>
+ptr[3] = *(ptr+3) = 3[ptr] = *(3+ptr) = 50<br>
+ptr[4] = *(ptr+4) = 4[ptr] = *(4+ptr) = 60<br>
+
+**Note** : Size of all pointers in a system are same.
+
+Uses of Pointers: <br>
+   - Pointers are used to access the memory locations that are created stastically or dynamically
+   - It is used to implement call by reference in functions.
+   - structures + pointers = Data structure
+
+<img width="571" height="131" alt="image" src="https://github.com/user-attachments/assets/31ce1bc2-ed28-4be1-9abd-82bcb2338d94" />
+
+#### We can store the string using character array and character pointer.
+
+**Character Array** : <br>
+
+char array[10] = "RAMAN"; <br>
+
+* If statement is declared globally = Data Segment
+* If statement is declared locally = Stack segment
+* They are of read-write type.
+
+**Character Pointer**: <br>
+char *ptr = "RAMAN";<br>
+
+Here pointer "ptr" will get seperate 4 byte memory and string will get seperate 4 byte of memroy.
+
+String stored using pointers always get stored in ro (Read Only) data segment. And the ro data segment is of read only types, we cannot write anything into this segment.
+
+Arithmentc operations on pointers or addresses depends on its size, they can be incremented by sizeof data type.
+
+**Question** : With referencde to pointers can we access array elements?
+
+Yes, we can. In 5 different ways.
+
+Dereference -> with reference to pointers we can access array elements in 5 different ways
+
+**1st Way**
+
+*ptr;
+ptr = ptr + 1; <br>
+
+   * these steps have to be repeated depending on number of elements
+
+**2nd Way**
+
+ptr[0]<Br>
+ptr[1]<br>
+   * We can apply subscript to a pointer.
+   * Before applying subscript to a pointer we have to perform a valid step, we have to store arra base address in pointer.
+
+**3rd Way**
+
+*(ptr + 0) -> ptr[0] <br>
+ptr[1] -> *(ptr + 1) <br>
+ptr[2] -> *(ptr + 2) <br>
+
+**4th Way and 5th Way**
+
+0[ptr] -> *(0 + ptr) -> 10 <br>
+1[ptr] -> *(1 + ptr) -> 20 <br>
+2[ptr] -> *(2 + ptr) -> 30 <br>
+3[ptr] -> *(3 + ptr) -> 40 <br>
+4[ptr] -> *(4 + ptr) -> 50 <br>
+
+* String that are passed as arguments to function are stored in RO(read only) segment.
+
+printf("Hello"); <br>
+strcpy( str , "Hello"); -> both Hello are stored in ro data<br>
+
+You are not passing entire string to the function, you are passing base address
+
+char *ptr = "Viven"; -> ro data<br>
+printf("%c", ptr[3]); -> e <br>
+
+But ptr[3] = 'a' -> causes segmentation fault <br>
+scanf("%s", ptr); -> causes segmentation fault <br>
+strcpy(ptr, "Hello"); -> we trying to write into ro data which is not possible<br>
+
+char str[10] = "viven";  -> stack segment <br>
+str[3] = 'a'; <br>
+scanf("%s", str); <br>
+strcpy(str, "Hello"); -> they wont cause segmentation fault<br>
+
