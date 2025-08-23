@@ -1049,3 +1049,28 @@ str[3] = 'a'; <br>
 scanf("%s", str); <br>
 strcpy(str, "Hello"); -> they wont cause segmentation fault<br>
 
+#### Example : 
+
+char *ptr[4];  -> array of 4 character pointers <br>
+i.e  As soon as compiler sees [] brackets it reads as array of pointers.
+
+char *aptr[4] = { "Yellow" , "Green" , "Blue" , "Black" }; <br>
+
+All strings are stored in ro data<br>
+Here array gets seperate memory and strings gets seperate memory<br>
+
+<img width="439" height="200" alt="image" src="https://github.com/user-attachments/assets/258a9f36-e491-4590-9e3b-36e84016ebcc" />
+
+
+**Note:** To store string we can use character array and character pointer. The string stored using character pointer, 4 byte seperate memory is allocated for pointer, ans string get seperate memory and string get copied to the ro data segment.<br>
+
+Multple strings can be stored usign 2d char array and also array of pointers.
+
+# Command Line Arguments
+
+CLA is the mechanism to provide input to the prgram.<br>
+Ways of providing inputs are : <br>
+   * scanf(" ")
+   * $./a.out viven amerpet hyderabad
+
+Name of the file is the first argument<br>
