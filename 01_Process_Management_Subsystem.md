@@ -1166,7 +1166,7 @@ Exec() family of calls : <br>
    }
 ```
 
-![image1 (2)](https://github.com/user-attachments/assets/46ba1bf3-4611-4f59-b0fd-b8d3b74528be)
+<img width="422" height="250" alt="image" src="https://github.com/user-attachments/assets/46ba1bf3-4611-4f59-b0fd-b8d3b74528be" />
 
    * from execl() control immediately jumps to the ls program main() function and CLA will be passed to ls-program main function.
    * all teh statements in main() of a.out are converted to instruction which are part of text segment of a.out
@@ -1229,7 +1229,8 @@ Exec() family of calls : <br>
       execv( "/bin/ls" , args);      
    }
 ```
-![image1](https://github.com/user-attachments/assets/81e1b4c0-a00f-4e7a-ac6c-6c17e6f5e588)
+
+<img width="422" height="250" alt="image" src="https://github.com/user-attachments/assets/81e1b4c0-a00f-4e7a-ac6c-6c17e6f5e588" />
 
    * Memory segments of a.out are replaced with memory segments of ls-program.
    * control immediately goes to ls-program main function.
