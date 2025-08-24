@@ -1074,3 +1074,164 @@ Ways of providing inputs are : <br>
    * $./a.out viven amerpet hyderabad
 
 Name of the file is the first argument<br>
+
+**Question** : How do we access CLA in our main function?
+
+   * Normal program:
+      ```
+         main()
+         {
+
+         }
+      ```
+   * Inorder to access CLA
+   sample.c -> 
+   ```
+   main(int argc , char *argv[])
+   {
+      printf("%s" , argv[0]);
+      printf("%s" , argv[1]);
+      printf("%s" , argv[2]);
+      printf("%s" , argv[3]);
+   }
+   ```
+   * output : 
+   ./sample <br>
+   viven <br>
+   amerpet<br>
+   Hyderabad<br>
+
+<img width="422" height="250" alt="image" src="https://github.com/user-attachments/assets/1beb47a3-79bd-4f64-ae2d-ca229f5e58b4" />
+
+#### $ls -l
+   * ls is a program similar to executable file a.out
+   * It has text, data and BSS segment.
+
+**Question** : ls is a program similar to that of executable file(a.out) but for executing it we cannot use ./ infront of ls i.e ./ls why?<br>
+   
+   * whenever we type ls or a.out the kernel application of shell immediately looks into system folder.
+   * System folders : /bin (or) /user/bin (or) /sbin/<br>
+   * ls is there inside /bin, thus ./ is not required, but a.out is not present in system folder.
+   * Thus, no match found error is displayed.
+   * ./ indicates the current working directory. therefore ./a.out indicates that a.out is present in current directory.
+<br>
+
+# Execl() family of calls
+
+**Question** : How do you run a program?
+
+   * from a terminal application or shell programs.
+   * If you want to execute a command from your c program by usig exec family of calls.
+
+Any command can be run or executed inside the c-program, for that exec() family of calls or standard library function System() is required.<br>
+
+Exec() family of calls : <br>
+
+   * execl()
+   * execv()
+   * execlp()
+   * execvp()
+   * Standard c-library function = System()
+
+**Question** : What is the need of Exec() family of calls
+
+   1) To run or execute command inside c-program
+   2) It replaces the existing memory segment(i.e process image) with new program memory segments(i.e new process image).
+   3) vfork() is used in combination with exec() family of calls.
+
+#### How to run $ls -l command from a c-program?
+
+   ```
+      main()
+      {
+         printf("Before exec() \n");
+         execl("/bin/ls", "ls" , "-l" , "\0" or 0);
+         printf("After exec() \n");                   // won't execute
+      }
+   ```
+
+   * /bin/ls -> path/program command name
+   * CLA list seperated by commas.
+   * CLA list should end with null character (\0);
+
+**Question** : Why we are repeating program name or command name?
+   * We are repeating becausse program name or command names are passed as 1st command line argument.
+
+```
+   main()
+   {
+      printf("Before exec()\n");
+      execll("/bin/ls" , "ls" , "-l" , 0);
+      printf("AFter exec call\n");
+   }
+```
+
+![image1 (2)](https://github.com/user-attachments/assets/46ba1bf3-4611-4f59-b0fd-b8d3b74528be)
+
+   * from execl() control immediately jumps to the ls program main() function and CLA will be passed to ls-program main function.
+   * all teh statements in main() of a.out are converted to instruction which are part of text segment of a.out
+   
+   <br>
+   
+   * When execl() is called then ls-command having its own text, data, bss segments replaces the segments of a.out
+   * (or)
+   * The existing process image is replaced with new process image. And due to which any statement after execl() call is not executed.
+   * Remaining statements after exec() call are never executed.
+   * exec() call in case of Error will return "-1" and incase of success it will return nothing.
+#### To replace teh existing process image with new process image we use exec family of calls.
+<br>
+
+**Question** : Most of the system call when they return error?
+   * Most of the system call return error when of passing improper arguments to the functions.
+   * Example : ret = execl("/bin/ls" , "ls" , "-l");
+   * no null character at end
+
+**Question** : How to run any sample.c program from c-program.
+
+```
+   sample.c
+   main(int argc , char *argv[])
+   {
+      for(int i=0; i<argc; i++)
+      {
+         printf("%s", argv[i]);
+      }
+   }
+```
+
+```
+   to run above program from another program
+   main()
+   {
+      printf("Before exec \n");
+      execl("./sample" , "./sample" , "viven" , "amerpet" , "Hyderabad" , 0);
+      printf("After exc \n");
+   }
+```
+<br>
+
+# Execl() vs Execv()
+
+   * execl("/bin/ls" , "ls" , "-l" , 0);
+      - CLA are passed as arguments to execl function
+   * Incase of execl() and execv() also the first argument is same.
+   * But different starts from 2nd argument onwards.
+   * CLA are passed as arguments to execl(), in execv() 2nd argument is the base address of array of pointers of characters, which are used for storing base address of multiple strings.
+   * In our case multiple strings are CLA
+
+```
+   main()
+   {
+      char *args[4];
+      args[0] = "ls";
+      args[1] = "-l";
+      args[2] = "\0";
+      execv( "/bin/ls" , args);      
+   }
+```
+![image1](https://github.com/user-attachments/assets/81e1b4c0-a00f-4e7a-ac6c-6c17e6f5e588)
+
+   * Memory segments of a.out are replaced with memory segments of ls-program.
+   * control immediately goes to ls-program main function.
+   * and this list of CLA list is passed to main() function of ls-program
+
