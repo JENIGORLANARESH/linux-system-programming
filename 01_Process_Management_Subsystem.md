@@ -1166,7 +1166,7 @@ Exec() family of calls : <br>
    }
 ```
 
-<img width="422" height="250" alt="image" src="https://github.com/user-attachments/assets/46ba1bf3-4611-4f59-b0fd-b8d3b74528be" />
+<img width="522" height="380" alt="image" src="https://github.com/user-attachments/assets/46ba1bf3-4611-4f59-b0fd-b8d3b74528be" />
 
    * from execl() control immediately jumps to the ls program main() function and CLA will be passed to ls-program main function.
    * all teh statements in main() of a.out are converted to instruction which are part of text segment of a.out
@@ -1230,9 +1230,145 @@ Exec() family of calls : <br>
    }
 ```
 
-<img width="422" height="250" alt="image" src="https://github.com/user-attachments/assets/81e1b4c0-a00f-4e7a-ac6c-6c17e6f5e588" />
+<img width="522" height="450" alt="image" src="https://github.com/user-attachments/assets/81e1b4c0-a00f-4e7a-ac6c-6c17e6f5e588" />
 
    * Memory segments of a.out are replaced with memory segments of ls-program.
    * control immediately goes to ls-program main function.
    * and this list of CLA list is passed to main() function of ls-program
 
+#### execl("/bin/ls" , "ls" , "-l" , 0) (vs) execlp("ls" , "ls" , "-l" , 0)
+
+#### execv("/bin/ls", args) (vs) execvp("ls" , args)
+
+   * execlp() and execvp() direcltly looks into the system folders. whereas in case of execl() and execv() we need to provide the path.
+
+<br>
+
+```
+   parent process
+   main()
+   {
+      int opt, status;✅
+      printf("Enter 1 to execute ls-program\n");
+      scanf("%d" , opt);✅
+      if(!opt)
+      {
+         exit(0);
+      }
+      id = fork();✅
+      if(id == 0)
+      {
+         execl("/bin/ls", "ls" , "-l" , 0);
+         exit(5);
+      }
+      wait(&stat);✅    // stat will 0 not 5
+      printf("Child with pid = %d terminated" , pid);
+   }
+```
+
+```
+   child process
+   main()
+   {
+      int opt, status;
+      printf("Enter 1 to execute ls-program\n");
+      scanf("%d" , opt);
+      if(!opt)
+      {
+         exit(0);
+      }
+      id = fork();
+      if(id == 0)
+      {
+         execl("/bin/ls", "ls" , "-l" , 0);✅
+         exit(5);
+      }
+      wait(&stat);
+      printf("Child with pid = %d terminated" , pid);
+   }
+```
+
+   * since execl() is used inside the child process, the process image of child is replaced by the execl() ls-process
+   * inside teh execl() : 
+   ```
+      main()
+      {
+         .....
+         return 0;
+      }
+   ```
+
+   * Thus return status of this ls main() function will be hold by the stutus argument inside main function of parent process.
+   * And exit status of child process will not be executed.
+
+   * Process image & PCB of child aer completly offloaded.
+   * Here we create a new child process is created, and everytime the memory segments fo child process are replace with ls.c program.
+
+**NOTE** : Shell program run inside kernel application. so this shell uses internally fork() + exec() family of calls. In terminal application shell a new child process get created every time , and this child process is replaced by different program, which is provide as input from user.
+
+**Question** : Write a program to create own shell for ls,ps, version, exit etc.
+
+```
+   main()
+   {
+      char command[20];
+      char *args[4];
+      while(1)
+      {
+         puts("myshell>");
+         gets(command);
+         args[0] = command;   // base address
+         args[1] = '\0';
+         id = fork();
+         if(id == 0)
+         {
+            execvp(command, args);
+            exit(5);
+         }
+         wait(&stat);
+         printf("Child process with pid = %d is terminated\n", id);
+      }
+   }
+```
+   * The above program works for single CLA.
+
+Creating own commands:
+```
+   main()
+   {
+      char command[20];
+      char *args[4];
+      int stat = 0, id;
+      while(1)
+      {
+         puts("myshell>");
+         gets(command);
+         args[0] = command;
+         args[1] = '\0';
+         
+         if(strcmp(command , "ver" , 3) == 0 )
+         {
+            printf("simple shell matches = 2 Nov 2012);
+            continue;
+         }
+         if(strcmp(command , "quit" , 5) == 0)
+         {
+            exit(5);
+         }
+         id = fork();
+         if(id == 0)
+         {
+            execvp(command, args);
+            exit(5);
+         }
+         wait(&stat);
+      }
+   }
+```
+
+Write a program that accepts multiple command line arguments.
+
+
+<BR>
+<BR>
+// END //
