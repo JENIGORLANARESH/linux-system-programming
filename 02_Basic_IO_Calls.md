@@ -38,10 +38,10 @@
     - Device files are also called as **Device Nodes**
 <br>
 
-**Question :**  How a user space application sends request to hardware?<br>
+#### Question :  How a user space application sends request to hardware?<br>
 **Answer :** An application can never send request directly to hardware. It uses system calls(i.e basic io calls) to interact with the drivers.
 
-**Question :** How do you make sure that only request to particular driver is sent?<br>
+#### Question : How do you make sure that only request to particular driver is sent?<br>
 **Answer :** Every driver has unique device files. And the application has to use basic i/o on device file to send request to particular driver. <br>
 And particualr driver initiates the corresponding hardware. This concept is applicable for window, android etc. as they all have user space as well as kernel space
 
