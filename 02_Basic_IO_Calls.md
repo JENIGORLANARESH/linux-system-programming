@@ -392,4 +392,246 @@ $ cp file.txt file2.txt
 
 <img width="828" height="572" alt="image" src="https://github.com/user-attachments/assets/50b1a55c-2e8c-4684-8f36-25689e0c24a5" />
 
-* Ini
+* Initially the buf was empty, once the fstat call invokes successfully the variable memory buf present in user space get the content of inode object present in the kernel space.
+
+<img width="596" height="365" alt="image" src="https://github.com/user-attachments/assets/36f97a47-9d03-4c20-898a-a92f02688d3b" />
+
+<br>
+
+- Fd table maintains the information about the file that has been opened.
+- fd is passed as an argument in all others basic i/o calls except open call.
+
+Note:- fd '0' when passed as an argument in basic i/o call, is used for taking input from Keyboard.
+- fd '1' and '2' when passed as an argument in basic i/o call is used for printing some information taken from Keyboard, and error too.
+
+#### How to print some string on screen?
+**Ans :**
+1. c-standard library functions
+``` 
+    printf("Hello world");
+    puts("Hello world");
+```
+
+2. System calls
+    - basic i/o calls [write()]
+    ```
+        main()
+        {
+            char buf[20];
+            scanf("%s", buf);
+            write( 1 , buf , strlen(buf));
+                        |
+                    address from where we need to import data
+                or
+            write( 1 , "Hello World" , strlen("Hello World"));
+                        |
+                    here the base address of the string is 
+                    passed. the string is present in ro data segment
+        }
+    ```
+    - Displays "Hello World" to terminal screen or console or screen
+
+* printf is the standard library call which internally uses system call with fd of 1
+
+#### How do you prove these strings are present in ro data segment?
+**Ans :** objdump -s ./a.out
+    
+- and see the ro data segment
+- s -> lowercase
+
+#### Take the i/p from keyboard, store in character array, and then display the result
+
+```
+    main()
+    {
+        char buf[20];
+        read( 0 , buf , 20);    0 -> stdin
+        write( 1 , buf , 5);    1 -> stdout
+    }
+```
+* once write executes successfully , it display info onto kernel screen.
+
+**NOTE :** Sometimes read behaves as blocking call and sometimes normal call
+
+#### When read is used as standard fd behaves as blocking call. When read is used in fd behaves as normal call?
+**Ans :** 
+- read accessing Special and Device files acts as blocking call.
+- In case of normal fd, once the cursor position reaches the end of file and still we are trying to read it, then it will return 0. thus in this case read is not a blocking call. But in above mentioned program read as blocking call
+* when read is using on stdin
+
+#### Need of printf
+- to display the result
+- mainly to understand the follow of our program
+
+<br>
+
+# dup2() System Call
+
+#### How do you compile multiple files to make singel executable file?
+1. 
+    ```
+        gcc sample1.c sample2.c
+    ```
+2. 
+    ```
+        #include "sample2.c"
+    ```
+3. Makefile and make utility
+
+    1. While compiling the multiple files functions names should naver be repeated and they should have one main function. i.e gcc sample1.c sample2.c
+    2. Larger programs will display alots of printf on screen (i.e terminal applications) which increases code size application
+    3. Once we queit from application the entire output is completely lost
+
+* These two (2 , 3) disadvantages can be overcome by writing or copy output into seperate file.
+
+```
+    ./a.out > file.txt
+```
+
+* In this case no output is displayed to the output terminal, but the entire output is copied to seperate file (i.e file.txt)
+
+#### There is another way to redirect the output to seperate file which can be done from c-program by using dup2() system call
+
+**NOTE :** #include "sample2.c" , during the compilation stage of sample1.c , the entire statements get replaced with the contents of sample2.c.
+
+```
+    main()
+    {
+        open("demo.txt" , O_RDWR);
+        if(fd < 0)
+        {
+            printf("Error in open\n");
+            exit(0);
+        }
+        printf("Statement 1\n");
+        dup2( fd , 1);
+        printf("man\n");
+        printf("mausam");
+        ...
+        ...
+    }
+```
+
+* dup2() call are going to duplicate the file descriptor.
+
+<img width="560" height="281" alt="image" src="https://github.com/user-attachments/assets/805926a5-7538-4c9a-a763-0546aae339fe" />
+
+
+- the 2nd argument of dup2() corresponds to the fd in from the init process i.e stdout, dup2() closes that fd, thus corresponding file object and inode object are destroyed.
+
+- And the fd which is passed as first argument of dup2() is copied to that location mentioned by the 2nd argument in fd table
+- Now fd table '1' is not pointing to the file object and inode object that belongs to stdout. It will contain the file object and inode object belonging to demon.txt
+
+**NOTE :** dup2 is used for duplicating the file descriptor corresonging entries.
+
+#### How do you redirect stdout to a file?
+**Ans :** Using dup2() call
+
+#### Advantages of dup()
+1. No output is displayed on terminal screen, the entire ouput is copied ans saved to a seperate file
+ 
+<br>
+
+# Permissions
+
+- permission are need only during creation of file.
+- permission is represented in octal form i.e 3bit
+- permission for
+    1. username/user id
+    2. group name/group id
+    3. others
+
+- During ubuntu installation, the installation package rquests a user name and password. From system point fo view username/unique login name has corresponging unique numeric id or user id(UID)
+
+- For creating new user account, there is GUI application "User Account"
+- A newly created account has
+    - seperate workspace for user in home directory
+    - (./home) i.e seperate desktop, documents, musi, and many more.
+- When any user is created , from system point of view UID is created.
+- Users are creted
+    - during OS installation
+    - using GUI application "user accout"
+    - CLI (command line interface) "useradd"
+
+#### Where do you store ownership infomation of a file?
+**Ans :** in Inode Object, which is present inside PCB
+
+#### Why do we create multiple users?
+**Ans :** 
+1. To create seperate workspace
+2. used to determine ownership of various system resources.
+
+* From userspace the ownerspace infomation of a file can be fetched by using command.
+    - ls -l -> command
+    - fstat() -> system call
+    - ls -ln -> for corresponding UID
+
+* Whatever infomation is displayed during ls -l is fetched from files corresponding to inode object
+* You have ownership for process which are created.
+* Ownership of a process is stored in PCB
+
+#### How to display username corresponding id?
+- ls -ln<br>
+i.e ls -l -> drwxr -xr -x 32 Viven Viven 4096 Nov27 12:11 Vect<Br>
+    ls -ln -> drwxr -xr-x 32 1000 1000 4096 Nov27 12:11 Vect <br>
+
+#### How to see multiple user infomation in your system?
+```
+ cat /etc /passwd
+```
+
+- Each line is going to represent single user, some users name are created by systems where as some are created by user itself
+- guest...... -> system created
+- viven...... -> user created
+
+<img width="743" height="254" alt="image" src="https://github.com/user-attachments/assets/fd811be9-066a-44de-8e05-4ce578cde57e" />
+
+- Each line represent user account and it is composed of 7 fields seperated by the colone
+
+#### How to see multiple group infomation in your system?
+```
+    cat /etc/group
+    - guest -GgE51r:x:141
+```
+
+#### How do you change the ownership of a file?
+1. system calls
+2. command
+
+1. System Calls -> from embedded point of view
+    ```
+        chmod() , fchmod()
+    ```
+    ```
+        chmod("file.txt" , 2000 , 5000);
+                            uid    gid
+        
+        fchmod(fd , 2000 , 5000);
+                    uid    gid
+    ```
+2. Command( or shell command) -> from administration point of view
+    ```
+        chmod 2000:5000 file.txt
+               uid  gid
+               or    or
+           username   groupname
+    ```
+
+<br>
+
+<img width="717" height="443" alt="image" src="https://github.com/user-attachments/assets/87b9b468-c6f3-4507-880c-50e98f0d606e" />
+
+* Suppose a file is created with permission 0640 permission
+
+<img width="774" height="250" alt="image" src="https://github.com/user-attachments/assets/daf00eef-9ef9-47fa-b98f-d1c8599e9db0" />
+
+- When you are accessing the file OS checks for corresponding UID and GID
+- The loggedin UID is compared with UID present in inode object.
+- if not matched, the logged in GID is compared with GID preent in inode object, if i matches the groups correspoding permissions are applicable
+- if loggedin UID & GID is not matched then other permissions are applied
+<br>
+
+- If we dont have matched UID and GID but still wants to access the file. It can be done by changing the UID and GID, or changing the permission. Otherwise it will throw an error.
+- UID and GID can be changed by using command chmod, fchmod
+
+### END
