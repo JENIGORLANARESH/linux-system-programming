@@ -98,7 +98,7 @@ Bacause it is used to access the normal files, special files and device files.<b
 
 * Basic io calls send request to file management sub system.
 
-<img width="350" height="657" alt="image" src="https://github.com/user-attachments/assets/ba5742c5-b72a-46f5-8466-6ffbbfb755e2" />
+<img width="300" height="457" alt="image" src="https://github.com/user-attachments/assets/ba5742c5-b72a-46f5-8466-6ffbbfb755e2" />
 
 * open() invokes an equivalent function in kernel sys_open().<br>
 
@@ -291,7 +291,7 @@ File name is accepted as an arguments by open system call. The remaining basic i
     printf("%s\n", buf);
 ```
 
-<img width="770" height="354" alt="image" src="https://github.com/user-attachments/assets/b40a625c-71f1-4fe3-b374-3280e19f6645" />
+<img width="670" height="304" alt="image" src="https://github.com/user-attachments/assets/b40a625c-71f1-4fe3-b374-3280e19f6645" />
 
 <br>
 
@@ -307,7 +307,7 @@ $ cp file.txt file2.txt
 #### Can i open same file from multiple process?
 **Ans :** YES.
 
-<img width="618" height="601" alt="image" src="https://github.com/user-attachments/assets/b8fe40f5-5555-41a9-ab3e-3fbf32946461" />
+<img width="518" height="501" alt="image" src="https://github.com/user-attachments/assets/b8fe40f5-5555-41a9-ab3e-3fbf32946461" />
 
 * While opening multiple process , we will have multiple PCB, multiple file objects, but all the file object will point to the same inode object of file.
 
@@ -322,7 +322,7 @@ $ cp file.txt file2.txt
 
 ## Standard I/O calls VS Basic I/O calls
 
-<img width="736" height="651" alt="image" src="https://github.com/user-attachments/assets/2a1c8f87-9620-4080-bb42-778a46272925" />
+<img width="636" height="551" alt="image" src="https://github.com/user-attachments/assets/2a1c8f87-9620-4080-bb42-778a46272925" />
 
 | S.N | Standard I/O calls | Basic I/O Calls |
 |---|---|---|
@@ -390,11 +390,11 @@ $ cp file.txt file2.txt
 
 <img width="615" height="312" alt="image" src="https://github.com/user-attachments/assets/87368a44-e467-4eda-9215-c76ea11d111b" />
 
-<img width="828" height="572" alt="image" src="https://github.com/user-attachments/assets/50b1a55c-2e8c-4684-8f36-25689e0c24a5" />
+<img width="528" height="352" alt="image" src="https://github.com/user-attachments/assets/50b1a55c-2e8c-4684-8f36-25689e0c24a5" />
 
 * Initially the buf was empty, once the fstat call invokes successfully the variable memory buf present in user space get the content of inode object present in the kernel space.
 
-<img width="596" height="365" alt="image" src="https://github.com/user-attachments/assets/36f97a47-9d03-4c20-898a-a92f02688d3b" />
+<img width="396" height="245" alt="image" src="https://github.com/user-attachments/assets/36f97a47-9d03-4c20-898a-a92f02688d3b" />
 
 <br>
 
@@ -619,11 +619,11 @@ i.e ls -l -> drwxr -xr -x 32 Viven Viven 4096 Nov27 12:11 Vect<Br>
 
 <br>
 
-<img width="717" height="443" alt="image" src="https://github.com/user-attachments/assets/87b9b468-c6f3-4507-880c-50e98f0d606e" />
+<img width="517" height="303" alt="image" src="https://github.com/user-attachments/assets/87b9b468-c6f3-4507-880c-50e98f0d606e" />
 
 * Suppose a file is created with permission 0640 permission
 
-<img width="774" height="250" alt="image" src="https://github.com/user-attachments/assets/daf00eef-9ef9-47fa-b98f-d1c8599e9db0" />
+<img width="604" height="200" alt="image" src="https://github.com/user-attachments/assets/daf00eef-9ef9-47fa-b98f-d1c8599e9db0" />
 
 - When you are accessing the file OS checks for corresponding UID and GID
 - The loggedin UID is compared with UID present in inode object.
